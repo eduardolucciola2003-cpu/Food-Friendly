@@ -1,23 +1,28 @@
-# backend/Dockerfile
-FROM node:20-alpine
-
-# Create app dir
+# ---- Build stage: install dev deps and compile TS ----
+FROM node:20-alpine AS build
 WORKDIR /app
 
-# 1) Install deps (works with or without a lockfile)
+# Install deps (include dev deps for TypeScript & @types)
 COPY package.json package-lock.json* ./
-RUN npm install --legacy-peer-deps || npm install
+RUN npm ci --include=dev || npm install --include=dev
 
-# 2) Copy source
+# Copy source and build
 COPY . .
-
-# 3) Build TypeScript
 RUN npm run build
 
-# 4) Runtime
-# Render sets PORT for you; we default to 4000 locally
+# ---- Runtime stage: production image with compiled JS ----
+FROM node:20-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Install only production deps
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev || npm install --omit=dev
+
+# Bring in compiled JS only
+COPY --from=build /app/dist ./dist
+
+# Render will set PORT; keep 4000 as local default
 ENV PORT=4000
 EXPOSE 4000
-
-# Start the server
 CMD ["node", "dist/index.js"]
