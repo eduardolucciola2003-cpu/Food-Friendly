@@ -1,19 +1,18 @@
 FROM node:20-alpine
 WORKDIR /app
 
-# Install deps (include dev deps so tsc can run)
+# install deps (keep dev deps so tsc can run)
 COPY package*.json ./
 RUN npm install
 
-# Copy the source
+# copy the rest
 COPY . .
 
-# Compile TypeScript -> dist/
+# compile TS -> dist/
 RUN npm run build
 
-# Runtime
 ENV PORT=4000
 EXPOSE 4000
 
-# Start compiled JS, NOT src
+# start compiled JS
 CMD ["node", "dist/index.js"]
