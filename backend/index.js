@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 
@@ -8,12 +8,12 @@ app.use(cors());
 app.use(morgan('dev'));
 
 // demo data
-const restaurants = [
+const restaurants = Object.freeze([
   { id: 'r1', name: 'Mumbai Masala', address: 'Via Roma 1', city: 'Milano' },
   { id: 'r2', name: 'Green Leaf Pure Veg', address: 'Via Torino 99', city: 'Milano' }
-] as const;
+]);
 
-const menu: Record<string, { id: string; name: string; priceCents: number; diet: 'veg'|'non_veg'; halal: boolean }[]> = {
+const menu = {
   r1: [
     { id: 'm1', name: 'Butter Chicken', priceCents: 1390, diet: 'non_veg', halal: true },
     { id: 'm2', name: 'Paneer Tikka',   priceCents: 1090, diet: 'veg',     halal: true }
@@ -23,20 +23,23 @@ const menu: Record<string, { id: string; name: string; priceCents: number; diet:
   ]
 };
 
-app.get('/live', (_req: Request, res: Response) => res.json({ ok: true }));
-app.get('/api/health', (_req: Request, res: Response) => res.json({ ok: true, restaurants: restaurants.length }));
+app.get('/live', (_req, res) => res.json({ ok: true }));
 
-app.get('/api/restaurants', (req: Request, res: Response) => {
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true, restaurants: restaurants.length });
+});
+
+app.get('/api/restaurants', (req, res) => {
   // (filters ignored in demo)
   res.json(restaurants);
 });
 
-app.get('/api/restaurants/:id/menu', (req: Request, res: Response) => {
+app.get('/api/restaurants/:id/menu', (req, res) => {
   const items = menu[req.params.id] ?? [];
   res.json(items);
 });
 
-app.post('/api/auth/guest', (_req: Request, res: Response) => {
+app.post('/api/auth/guest', (_req, res) => {
   res.json({ userId: 'guest-' + Math.random().toString(36).slice(2) });
 });
 
