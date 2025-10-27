@@ -14,7 +14,7 @@ app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ ok: true, status: "healthy" });
 });
 
-// Example root route
+// Root route
 app.get("/", (_req: Request, res: Response) => {
   res.status(200).json({ message: "Food-Friendly API is running 🚀" });
 });
@@ -24,6 +24,5 @@ const PORT = Number(process.env.PORT ?? 4000);
 
 // Bind to 0.0.0.0 for Docker/Render
 app.listen(PORT, "0.0.0.0", () => {
-  // eslint-disable-next-line no-console
   console.log(`Server listening on http://0.0.0.0:${PORT}`);
 });
