@@ -1,20 +1,18 @@
-# backend/Dockerfile
 FROM node:20-alpine
-
 WORKDIR /app
 
-# Install deps (cache-friendly)
+# install deps (keep dev deps so tsc can run)
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
-# Copy source
+# copy source
 COPY . .
 
-# Generate Prisma client & build TS
-RUN npx prisma generate
+# compile TS -> dist/
 RUN npm run build
 
+ENV PORT=4000
 EXPOSE 4000
 
-# Apply schema, then start server
-CMD ["sh","-c","npx prisma migrate deploy || npx prisma db push; node dist/index.ts"]
+# start compiled JS
+CMD ["npm","start"]
