@@ -6,7 +6,7 @@ services:
     rootDir: backend
     dockerContext: backend
     dockerfilePath: backend/Dockerfile
-    plan: starter
+    plan: free
     healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
@@ -25,11 +25,7 @@ services:
     rootDir: admin
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
-    # Set after backend URL exists:
-    # envVars:
-    #   - key: VITE_API_BASE
-    #     value: https://<backend-url>/api
 
 databases:
   - name: food-friendly-db
-    plan: starter
+    plan: free
