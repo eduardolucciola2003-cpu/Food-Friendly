@@ -1,9 +1,34 @@
-FROM node:20-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY tsconfig.json ./
-COPY src ./src
-RUN npm run build
-EXPOSE 4000
-CMD ["npm","start"]
+services:
+  # --- Backend API (Express) ---
+  - type: web
+    name: food-friendly-backend
+    runtime: docker
+    # POINT TO THE NESTED BACKEND FOLDER
+    rootDir: Food-Friendly-minimal-fullstack/backend
+    # When rootDir is set, these must be relative to that folder:
+    dockerContext: .
+    dockerfilePath: Dockerfile
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: food-friendly-db
+          property: connectionString
+      - key: PORT
+        value: "4000"
+      - key: CORS_ORIGIN
+        value: https://food-friendly-admin.onrender.com
+
+  # --- Admin (Vite static site) ---
+  - type: web
+    name: food-friendly-admin
+    runtime: static
+    # POINT TO THE NESTED ADMIN FOLDER
+    rootDir: Food-Friendly-minimal-fullstack/admin
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+
+databases:
+  - name: food-friendly-db
+    plan: free
