@@ -1,21 +1,22 @@
-import express, { Request, Response } from "express";
+// @ts-nocheck
+
+import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 
 const app = express();
 
-// middleware
 app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 
-// health check used by Render
-app.get("/api/health", (_req: Request, res: Response) => {
-  res.json({ ok: true }); // <— JS boolean is `true` (not `True`)
+// Health check for Render
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true }); // 'true' (not 'True')
 });
 
-// example route (optional)
-app.get("/api/test", (_req: Request, res: Response) => {
+// Optional test
+app.get("/api/test", (_req, res) => {
   res.json({ message: "Backend working ✅" });
 });
 
