@@ -3,9 +3,7 @@ services:
   - type: web
     name: food-friendly-backend
     runtime: docker
-    # POINT TO THE NESTED BACKEND FOLDER
     rootDir: Food-Friendly-minimal-fullstack/backend
-    # When rootDir is set, these must be relative to that folder:
     dockerContext: .
     dockerfilePath: Dockerfile
     plan: free
@@ -24,10 +22,10 @@ services:
   - type: web
     name: food-friendly-admin
     runtime: static
-    # POINT TO THE NESTED ADMIN FOLDER
     rootDir: Food-Friendly-minimal-fullstack/admin
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
+    plan: free
 
 databases:
   - name: food-friendly-db
