@@ -1,6 +1,4 @@
-// @ts-nocheck
-
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import morgan from "morgan";
 
@@ -11,12 +9,12 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 // Health check for Render
-app.get("/api/health", (_req, res) => {
-  res.json({ ok: true }); // JS uses `true` (not `True`)
+app.get("/api/health", (_req: Request, res: Response) => {
+  res.json({ ok: true });
 });
 
-// Optional test route
-app.get("/api/test", (_req, res) => {
+// Optional test endpoint
+app.get("/api/test", (_req: Request, res: Response) => {
   res.json({ message: "Backend working ✅" });
 });
 
