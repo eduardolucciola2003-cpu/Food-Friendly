@@ -1,47 +1,52 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 
 const app = express();
+const PORT = process.env.PORT || 4000;
+
+// Accept multiple CORS origins if needed
+const origins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
+
 app.use(express.json());
-app.use(cors());
 app.use(morgan('dev'));
 
-// demo data
-const restaurants = Object.freeze([
-  { id: 'r1', name: 'Mumbai Masala', address: 'Via Roma 1', city: 'Milano' },
-  { id: 'r2', name: 'Green Leaf Pure Veg', address: 'Via Torino 99', city: 'Milano' }
-]);
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true); // allow tools like Postman
+    if (origins.length === 0 || origins.includes(origin)) return cb(null, true);
+    return cb(new Error('Not allowed by CORS'));
+  }
+}));
 
-const menu = {
-  r1: [
-    { id: 'm1', name: 'Butter Chicken', priceCents: 1390, diet: 'non_veg', halal: true },
-    { id: 'm2', name: 'Paneer Tikka',   priceCents: 1090, diet: 'veg',     halal: true }
-  ],
-  r2: [
-    { id: 'm3', name: 'Veg Thali',      priceCents:  990, diet: 'veg',     halal: true }
-  ]
-};
+// ---------- ROUTES ----------
 
-app.get('/live', (_req, res) => res.json({ ok: true }));
-
-app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, restaurants: restaurants.length });
+// Root route (so you don't see "Cannot GET /")
+app.get('/', (_req, res) => {
+  res.json({ ok: true, service: 'food-friendly-backend' });
 });
 
-app.get('/api/restaurants', (req, res) => {
-  // (filters ignored in demo)
-  res.json(restaurants);
+// Required by Render — Health Check endpoint
+app.get('/healthz', (_req, res) => res.send('ok'));
+
+// Example API route you can extend later
+app.get('/api/version', (_req, res) => {
+  res.json({ version: '0.1.0', time: new Date().toISOString() });
 });
 
-app.get('/api/restaurants/:id/menu', (req, res) => {
-  const items = menu[req.params.id] ?? [];
-  res.json(items);
+// Global error handler
+app.use((err, _req, res, _next) => {
+  console.error(err);
+  res.status(500).json({
+    error: err?.message || 'Internal error'
+  });
 });
 
-app.post('/api/auth/guest', (_req, res) => {
-  res.json({ userId: 'guest-' + Math.random().toString(36).slice(2) });
+// Start server
+app.listen(PORT, () => {
+  console.log(`Backend running on http://localhost:${PORT}`);
 });
-
-const PORT = Number(process.env.PORT) || 4000;
-app.listen(PORT, () => console.log(`Food-Friendly backend on http://localhost:${PORT}`));
