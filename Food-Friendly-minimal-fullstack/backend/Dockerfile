@@ -6,13 +6,8 @@ WORKDIR /app
 
 # -----------------------------
 # 1) Install dependencies
-#    (works with or without a lockfile)
 # -----------------------------
-# Copy only package manifests first for better layer caching
 COPY package.json package-lock.json* ./
-
-# Prefer npm install (ci requires an exact lockfile)
-# Fallback ensures builds don’t fail on older npm/lockfile combos
 RUN npm install --legacy-peer-deps || npm install
 
 # -----------------------------
@@ -21,9 +16,8 @@ RUN npm install --legacy-peer-deps || npm install
 COPY . .
 
 # -----------------------------
-# 3) Generate Prisma client & build TypeScript
+# 3) Build TypeScript
 # -----------------------------
-RUN npx prisma generate
 RUN npm run build
 
 # -----------------------------
@@ -32,5 +26,7 @@ RUN npm run build
 ENV PORT=4000
 EXPOSE 4000
 
-# Apply migrations (or push in dev) then start server
-CMD sh -c "npx prisma migrate deploy || npx prisma db push; node dist/index.js"
+# -----------------------------
+# 5) Start server
+# -----------------------------
+CMD ["node", "dist/index.js"]
