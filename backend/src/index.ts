@@ -7,12 +7,10 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 
-// --- HEALTH ROUTE ---
 app.get("/api/health", (_req: Request, res: Response) => {
   res.json({ ok: true });
 });
 
-// --- EXAMPLE ROUTE ---
 app.get("/api/test", (_req: Request, res: Response) => {
   res.json({ message: "Backend working ✅" });
 });
