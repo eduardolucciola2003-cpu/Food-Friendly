@@ -17,4 +17,4 @@ RUN npm run build
 EXPOSE 4000
 
 # Apply schema, then start server
-CMD ["sh","-c","npx prisma migrate deploy || npx prisma db push; node dist/index.js"]
+CMD ["sh","-c","npx prisma migrate deploy || npx prisma db push; node dist/index.ts"]
