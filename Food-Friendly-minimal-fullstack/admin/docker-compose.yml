@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: vegapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  backend:
+    build: ./backend
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://app:app@db:5432/vegapp
+      PORT: 4000
+      CORS_ORIGIN: http://localhost:5173,http://localhost:19006
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend:/app
+    command: npm run start:docker
+volumes:
+  db_data:

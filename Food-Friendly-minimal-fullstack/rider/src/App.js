@@ -1,0 +1,2 @@
+import React from 'react';import { SafeAreaView, Text } from 'react-native';
+export default function App(){ return <SafeAreaView style={{padding:16}}><Text style={{fontSize:22,fontWeight:'800'}}>Rider App</Text><Text>Connects to the same API.</Text></SafeAreaView>; }
