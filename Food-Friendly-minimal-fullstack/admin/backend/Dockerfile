@@ -1,5 +1,4 @@
 services:
-  # --- Backend API (Express) ---
   - type: web
     name: food-friendly-backend
     runtime: docker
@@ -18,7 +17,6 @@ services:
       - key: CORS_ORIGIN
         value: https://food-friendly-admin.onrender.com
 
-  # --- Admin (Vite static site) ---
   - type: web
     name: food-friendly-admin
     runtime: static
@@ -30,3 +28,4 @@ services:
 databases:
   - name: food-friendly-db
     plan: free
+CMD ["sh","-c","npx prisma migrate deploy || npx prisma db push; node dist/index.js"]
