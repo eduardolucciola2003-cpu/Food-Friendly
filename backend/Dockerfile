@@ -1,20 +1,36 @@
+# backend/Dockerfile
 FROM node:20-alpine
 
+# Create app dir
 WORKDIR /app
 
-# Install deps (works with or without a lockfile)
+# -----------------------------
+# 1) Install dependencies
+#    (works with or without a lockfile)
+# -----------------------------
+# Copy only package manifests first for better layer caching
 COPY package.json package-lock.json* ./
+
+# Prefer npm install (ci requires an exact lockfile)
+# Fallback ensures builds don’t fail on older npm/lockfile combos
 RUN npm install --legacy-peer-deps || npm install
 
-# Copy source
+# -----------------------------
+# 2) Copy source
+# -----------------------------
 COPY . .
 
-# Prisma + build
+# -----------------------------
+# 3) Generate Prisma client & build TypeScript
+# -----------------------------
 RUN npx prisma generate
 RUN npm run build
 
-EXPOSE 4000
+# -----------------------------
+# 4) Runtime config
+# -----------------------------
 ENV PORT=4000
+EXPOSE 4000
 
-# Apply migrations, then start
+# Apply migrations (or push in dev) then start server
 CMD sh -c "npx prisma migrate deploy || npx prisma db push; node dist/index.js"
