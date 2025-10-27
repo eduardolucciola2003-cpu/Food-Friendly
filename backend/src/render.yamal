@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: food-friendly-backend
+    env: docker
+    rootDir: backend
+    dockerContext: backend
+    plan: starter
+  - type: static_site
+    name: food-friendly-admin
+    rootDir: admin
+    buildCommand: npm ci && npm run build
+    publishPath: dist
