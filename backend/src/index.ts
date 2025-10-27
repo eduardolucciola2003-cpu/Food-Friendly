@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 app.get("/api/health", (_req: Request, res: Response) => {
-  res.json({ ok: true });
+  res.json({ ok: true }); // <-- JS uses true, not True
 });
 
 const PORT = Number(process.env.PORT || 4000);
