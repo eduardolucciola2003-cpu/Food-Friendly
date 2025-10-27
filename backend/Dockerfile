@@ -1,10 +1,18 @@
 FROM node:20-alpine
 WORKDIR /app
 
+# install deps (keep dev deps so tsc can run)
 COPY package*.json ./
-RUN npm install --legacy-peer-deps || npm install
+RUN npm install
 
+# copy the rest
 COPY . .
 
+# compile TS -> dist/
+RUN npm run build
+
+ENV PORT=4000
 EXPOSE 4000
-CMD ["node", "src/index.js"]
+
+# start compiled JS
+CMD ["node", "dist/index.js"]
