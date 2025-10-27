@@ -1,20 +1,30 @@
-# backend/Dockerfile
-FROM node:20-alpine
+services:
+  - type: web
+    name: food-friendly-backend
+    runtime: docker
+    rootDir: Food-Friendly-minimal-fullstack/backend
+    dockerContext: .
+    dockerfilePath: Dockerfile
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: food-friendly-db
+          property: connectionString
+      - key: PORT
+        value: "4000"
+      - key: CORS_ORIGIN
+        value: https://food-friendly-admin.onrender.com
 
-WORKDIR /app
+  - type: web
+    name: food-friendly-admin
+    runtime: static
+    rootDir: Food-Friendly-minimal-fullstack/admin
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    plan: free
 
-# Install deps first (cache)
-COPY package*.json ./
-RUN npm ci
-
-# Copy code
-COPY . .
-
-# Generate prisma client & build
-RUN npx prisma generate
-RUN npm run build
-
-EXPOSE 4000
-
-# << THIS LINE FIXES YOUR DEPLOY ISSUE >>
-CMD ["sh", "-c", "npx prisma migrate deploy || npx prisma db push; node dist/index.js"]
+databases:
+  - name: food-friendly-db
+    plan: free
