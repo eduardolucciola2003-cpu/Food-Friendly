@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import { router } from './routes.js';   // ✅ 1) IMPORT HERE
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -23,22 +24,21 @@ app.use(cors({
   }
 }));
 
-// ---------- ROUTES ----------
-
-// Root route (so you don't see "Cannot GET /")
+// ---------- ROOT ROUTES ----------
 app.get('/', (_req, res) => {
   res.json({ ok: true, service: 'food-friendly-backend' });
 });
 
-// Required by Render — Health Check endpoint
 app.get('/healthz', (_req, res) => res.send('ok'));
 
-// Example API route you can extend later
 app.get('/api/version', (_req, res) => {
   res.json({ version: '0.1.0', time: new Date().toISOString() });
 });
 
-// Global error handler
+// ---------- ATTACH YOUR API ROUTES ----------
+app.use('/api', router);  // ✅ 2) USE ROUTER HERE
+
+// ---------- GLOBAL ERROR HANDLER ----------
 app.use((err, _req, res, _next) => {
   console.error(err);
   res.status(500).json({
@@ -46,7 +46,7 @@ app.use((err, _req, res, _next) => {
   });
 });
 
-// Start server
+// ---------- START SERVER ----------
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
 });
