@@ -1,9 +1,20 @@
+# backend/Dockerfile
 FROM node:20-alpine
+
 WORKDIR /app
+
+# Install deps first (cache)
 COPY package*.json ./
 RUN npm ci
-COPY tsconfig.json ./
-COPY src ./src
+
+# Copy code
+COPY . .
+
+# Generate prisma client & build
+RUN npx prisma generate
 RUN npm run build
+
 EXPOSE 4000
-CMD ["npm","start"]
+
+# << THIS LINE FIXES YOUR DEPLOY ISSUE >>
+CMD ["sh", "-c", "npx prisma migrate deploy || npx prisma db push; node dist/index.js"]
