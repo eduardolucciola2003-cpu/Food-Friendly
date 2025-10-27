@@ -1,4 +1,9 @@
-import express, { Request, Response } from "express";
+const express = require("express");
+const cors = require("cors");
+const morgan = require("morgan");
+// @ts-nocheck
+
+import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 
@@ -9,16 +14,14 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 // Health check for Render
-app.get("/api/health", (_req: Request, res: Response) => {
-  res.json({ ok: true }); // JS uses true, not True
+app.get("/api/health", (_req, res) => {
+  res.json({ ok: true });
+  res.json({ ok: true }); // JS boolean is `true`, not `True`
 });
 
-// Optional test route
-app.get("/api/test", (_req: Request, res: Response) => {
+// Optional test
+app.get("/api/test", (_req, res) => {
   res.json({ message: "Backend working ✅" });
 });
 
 const PORT = Number(process.env.PORT || 4000);
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
