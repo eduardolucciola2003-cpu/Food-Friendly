@@ -2,10 +2,7 @@
   "name": "food-friendly-backend",
   "version": "0.1.0",
   "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js"
-  },
+  "scripts": { "build": "tsc", "start": "node dist/index.js" },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
