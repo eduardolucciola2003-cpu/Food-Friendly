@@ -11,13 +11,11 @@ RUN npm install --legacy-peer-deps || npm install
 # 2) Copy source
 COPY . .
 
-# 3) Generate Prisma client & build TypeScript
-RUN npx prisma generate || true
+# 3) Build TypeScript
 RUN npm run build
 
-# 4) Runtime config
+# 4) Runtime
 ENV PORT=4000
 EXPOSE 4000
 
-# Apply migrations (or push in dev) then start server
-CMD sh -c "npx prisma migrate deploy || npx prisma db push; node dist/index.js"
+CMD ["node", "dist/index.js"]
