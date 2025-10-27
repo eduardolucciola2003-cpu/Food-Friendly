@@ -1,20 +1,20 @@
 # backend/Dockerfile
 FROM node:20-alpine
 
-# Create app dir
+# 1) App dir
 WORKDIR /app
 
-# 1) Install dependencies (works with or without a lockfile)
+# 2) Install deps (works with or without a lockfile)
 COPY package.json package-lock.json* ./
 RUN npm install --legacy-peer-deps || npm install
 
-# 2) Copy source
+# 3) Copy source
 COPY . .
 
-# 3) Build TypeScript
+# 4) Build TypeScript
 RUN npm run build
 
-# 4) Runtime
+# 5) Runtime
 ENV PORT=4000
 EXPOSE 4000
 
